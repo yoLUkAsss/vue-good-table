@@ -6,12 +6,7 @@
         <!-- <span v-if="perPage" class="perpage-count">{{perPage}}</span> -->
         <select class="browser-default" @change="perPageChanged">
           <option v-if="perPage" :value="perPage">{{perPage}}</option>
-          <option value="10">10</option>
-          <option value="20">20</option>
-          <option value="30">30</option>
-          <option value="40">40</option>
-          <option value="50">50</option>
-          <option value="-1">{{allText}}</option>
+          <option v-else value="50">50</option>
         </select>
       </label>
     </div>
@@ -50,7 +45,7 @@
 
     data: () => ({
       currentPage: 1,
-      currentPerPage: 10
+      currentPerPage: 50
     }),
 
     methods: {
@@ -87,7 +82,7 @@
           this.currentPerPage = this.perPage;
         }else{
           //reset to default
-          this.currentPerPage = 10;
+          this.currentPerPage = 50;
         }
         this.perPageChanged();
       }

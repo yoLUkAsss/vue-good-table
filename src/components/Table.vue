@@ -192,7 +192,7 @@
 
     data: () => ({
       currentPage: 1,
-      currentPerPage: 10,
+      currentPerPage: 50,
       sortColumn: -1,
       sortType: 'asc',
       globalSearchTerm: '',

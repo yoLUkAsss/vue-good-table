@@ -3,7 +3,7 @@
     <vue-good-table
       :paginate="true"
       :columns="columns" 
-      :rows="rows" 
+      :rows="rows"
       :line-numbers="true">
       <template slot="table-row-before" slot-scope="props">
         <td><input type="checkbox" /></td>
