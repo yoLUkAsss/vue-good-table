@@ -40,7 +40,9 @@
       prevText: {default: 'Prev'},
       rowsPerPageText: {default: 'Rows per page:'},
       ofText: {default: 'of'},
-      allText: {default: 'All'}
+      allText: {default: 'All'},
+
+      nextIsPossibleValue: null
     },
 
     data: () => ({
@@ -91,15 +93,17 @@
 
     computed: {
       paginatedInfo() {
-        if (this.currentPerPage === -1) {
-          return `1 - ${this.total} ${this.ofText} ${this.total}`;
-        }
-        const first = (this.currentPage - 1) * this.currentPerPage ? (this.currentPage - 1) * this.currentPerPage : 1;
-        const last = Math.min(this.total, this.currentPerPage * this.currentPage);
-        return `${first} - ${last} ${this.ofText} ${this.total}`;
+        return `Pagina - ${this.currentPage}`
+        // if (this.currentPerPage === -1) {
+        //   return `1 - ${this.total} ${this.ofText} ${this.total}`;
+        // }
+        // const first = (this.currentPage - 1) * this.currentPerPage ? (this.currentPage - 1) * this.currentPerPage : 1;
+        // const last = Math.min(this.total, this.currentPerPage * this.currentPage);
+        // return `${first} - ${last} ${this.ofText} ${this.total}`;
       },
       nextIsPossible() {
-        return (this.total > this.currentPerPage * this.currentPage);
+        // return (this.total > this.currentPerPage * this.currentPage);
+        return this.nextIsPossibleValue
       },
       prevIsPossible() {
         return this.currentPage > 1;

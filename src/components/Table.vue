@@ -20,6 +20,7 @@
         :prevText="prevText"
         :rowsPerPageText="rowsPerPageText"
         :ofText="ofText"
+        :next-is-possible-value="nextIsPossibleValue"
         :allText="allText"></vue-good-pagination>
 
       <table ref="table" :class="styleClass">
@@ -112,7 +113,7 @@
             </slot>
             <slot name="table-row-after" :row="row" :index="index"></slot>
           </tr>
-          <tr v-if="processedRows.length === 0">
+          <tr v-if="newRows.length === 0">
             <td :colspan="columns.length">
               <slot name="emptystate">
                 <div class="center-align text-disabled">
@@ -136,6 +137,7 @@
         :rowsPerPageText="rowsPerPageText"
         :ofText="ofText"
         :allText="allText"
+        :next-is-possible-value="nextIsPossibleValue"
         ></vue-good-pagination>
     </div>
   </div>
@@ -166,6 +168,7 @@
       rows: {},
       onClick: {},
       perPage: {},
+      whenPageChange: {},
       sortable: {default: true},
       paginate: {default: false},
       paginateOnTop: {default: false},
@@ -187,7 +190,8 @@
       prevText: {default: 'Prev'},
       rowsPerPageText: {default: 'Rows per page:'},
       ofText: {default: 'of'},
-      allText: {default: 'All'}
+      allText: {default: 'All'},
+
     },
 
     data: () => ({
@@ -202,12 +206,16 @@
       forceSearch: false,
       sortChanged: false,
       dataTypes: dataTypes || {},
+
+      newRows: null,
+      nextIsPossibleValue: {default: true}      
     }),
 
     methods: {
 
       pageChanged(pagination) {
         this.currentPage = pagination.currentPage;
+        this.$emit('current-page', {currentPage: this.currentPage})
         this.$emit('pageChanged', {currentPage: this.currentPage, total: Math.floor(this.rows.length / this.currentPerPage)});
       },
 
@@ -385,7 +393,10 @@
       },
       rows: {
         handler: function(newObj){
-          this.filterRows();
+          // this.filterRows();
+          console.log(JSON.stringify(newObj, undefined, 2))
+          this.newRows = newObj.slice(0, this.currentPerPage)
+          this.nextIsPossibleValue = (this.newRows.length < this.currentPerPage) ? false : true
         },
         deep: true
       }
@@ -507,31 +518,32 @@
       },
 
       paginated() {
-        var paginatedRows = this.processedRows;
+        return this.newRows
+        // var paginatedRows = this.processedRows;
 
-        if (this.paginate) {
-          var pageStart = (this.currentPage - 1) * this.currentPerPage;
+        // if (this.paginate) {
+        //   var pageStart = (this.currentPage - 1) * this.currentPerPage;
 
-          // in case of filtering we might be on a page that is
-          // not relevant anymore
-          // also, if setting to all, current page will not be valid
-          if (pageStart >= this.processedRows.length
-            || this.currentPerPage === -1) {
-            this.currentPage = 1;
-            pageStart = 0;
-          }
+        //   // in case of filtering we might be on a page that is
+        //   // not relevant anymore
+        //   // also, if setting to all, current page will not be valid
+        //   if (pageStart >= this.processedRows.length
+        //     || this.currentPerPage === -1) {
+        //     this.currentPage = 1;
+        //     pageStart = 0;
+        //   }
 
-          //calculate page end now
-          var pageEnd = paginatedRows.length + 1;
+        //   //calculate page end now
+        //   var pageEnd = paginatedRows.length + 1;
 
-          //if the setting is set to 'all'
-          if (this.currentPerPage !== -1) {
-            pageEnd = this.currentPage * this.currentPerPage;
-          }
+        //   //if the setting is set to 'all'
+        //   if (this.currentPerPage !== -1) {
+        //     pageEnd = this.currentPage * this.currentPerPage;
+        //   }
 
-          paginatedRows = paginatedRows.slice(pageStart, pageEnd);
-        }
-        return paginatedRows;
+        //   paginatedRows = paginatedRows.slice(pageStart, pageEnd);
+        // }
+        // return paginatedRows;
       },
 
       originalRows() {
@@ -555,10 +567,17 @@
     },
 
     mounted() {
+
+      this.newRows = this.rows
+
       this.filteredRows = this.originalRows;
 
       if (this.perPage) {
         this.currentPerPage = this.perPage;
+      }
+
+      if (this.newRows.length < this.currentPerPage) {
+        this.nextIsPossibleValue = false
       }
 
       //take care of default sort on mount
